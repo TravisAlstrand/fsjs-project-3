@@ -33,24 +33,36 @@ jobSelect.addEventListener('change', () => {
 // --T-SHIRT--
 // *****************************************************************
 
-// disable the shirt color select upong loading page
+// disable the shirt color select upon loading page
 shirtColorSelect.disabled = true;
 
-// listen for selection of t-shirt
+// listen for selection of t-shirt design
 shirtDesignSelect.addEventListener('change', () => {
+
     // enable shirt color select menu
     shirtColorSelect.disabled = false;
 
+    // if 'js puns' design is selected
     if (shirtDesignSelect.value === 'js puns') {
+
+        // loop through each color option
         shirtColors.forEach(option => {
+
+            // if option is for 'js puns', show & hide others
             if (option.getAttribute('data-theme') === 'js puns') {
                 option.removeAttribute('hidden');
             } else if (option.getAttribute('data-theme') === 'heart js') {
                 option.setAttribute('hidden', 'hidden');
             }
         })
+
+    // if 'heart js' design is selected
     } else if (shirtDesignSelect.value === 'heart js') {
+
+        // loop through each color option
         shirtColors.forEach(option => {
+
+            // if option is for 'heart js', show & hide others
             if (option.getAttribute('data-theme') === 'heart js') {
                 option.removeAttribute('hidden');
             } else if (option.getAttribute('data-theme') === 'js puns') {
@@ -59,3 +71,7 @@ shirtDesignSelect.addEventListener('change', () => {
         })
     }
 });
+
+// *****************************************************************
+// --T-SHIRT--
+// *****************************************************************
