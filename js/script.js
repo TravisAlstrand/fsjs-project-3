@@ -1,9 +1,15 @@
 const nameField = document.getElementById('name');
+
 const jobSelect = document.getElementById('title');
 const otherJobText = document.getElementById('other-job-role');
+
 const shirtDesignSelect = document.getElementById('design');
 const shirtColorSelect = document.getElementById('color');
-let shirtColors = document.querySelectorAll('option[data-color]');
+const shirtColors = document.querySelectorAll('option[data-theme]');
+
+const activitiesField = document.getElementById('activities');
+const totalCostDisplay = document.getElementById('activities-cost');
+let totalCost = 0;
 
 // *****************************************************************
 // --NAME FIELD--
@@ -73,5 +79,39 @@ shirtDesignSelect.addEventListener('change', () => {
 });
 
 // *****************************************************************
-// --T-SHIRT--
+// --Activities--
 // *****************************************************************
+
+// listen for changes in activities selections
+activitiesField.addEventListener('change', (e) => {
+
+    // get the value of the 'data-cost' attribute on checked target
+    const targetCostString = e.target.getAttribute('data-cost');
+
+    // convert 'data-cost' value to an integer
+    const targetCost = parseInt(targetCostString);
+
+    // check if target was checked
+    if (e.target.checked === true) {
+
+        // add the cost of target to total cost variable
+        totalCost += targetCost;
+
+        // call update cost passing new totalCost
+        updateCost(totalCost);
+
+        // if target was unchecked
+    } else if (e.target.checked === false) {
+
+        // subtract the cost of target from total cost variable
+        totalCost -= targetCost;
+
+        // call update cost passing new totalCost
+        updateCost(totalCost);
+    }
+});
+
+// updates HTML displaying total cost of selected activities
+function updateCost(total) {
+    totalCostDisplay.innerHTML = `Total: $${total}`;
+}
