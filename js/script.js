@@ -1,3 +1,7 @@
+// *****************************************************************
+// --SELECTORS--
+// *****************************************************************
+
 // name
 const nameField = document.getElementById('name');
 // job title
@@ -22,6 +26,8 @@ const cardNumField = document.getElementById('cc-num');
 const zipField = document.getElementById('zip');
 const cvvField = document.getElementById('cvv');
 const formElement = document.querySelector('form');
+// accessibility
+const activitiesArray = document.querySelectorAll('[type="checkbox"]');
 
 // *****************************************************************
 // --NAME FIELD--
@@ -128,6 +134,22 @@ function updateCost(total) {
     totalCostDisplay.innerHTML = `Total: $${total}`;
 }
 
+// --Activities focus states-- //
+
+// loop through each activity checkbox
+activitiesArray.forEach(activity => {
+
+    // add focus listener on each & add .focus class to parent Label
+    activity.addEventListener('focus', (e) => {
+        e.target.parentNode.classList.add('focus');
+    });
+
+    // add blur listener on each & remove .focus class from parent Label
+    activity.addEventListener('blur', (e) => {
+        e.target.parentNode.classList.remove('focus');
+    });
+});
+
 // *****************************************************************
 // --Payment--
 // *****************************************************************
@@ -171,7 +193,15 @@ paymentSelect.addEventListener('change', () => {
 // --Submission--
 // *****************************************************************
 
-// check name validity, return bool
+// array of input field variables
+const inputFields = [
+    nameField,
+    emailField,
+    zipField,
+    cvvField
+];
+
+// check input field validities, return bool
 function checkName(name) {
     return /^[a-z]+\s?[a-z]+$/i.test(name);
 }
@@ -202,20 +232,35 @@ formElement.addEventListener('submit', (e) => {
     const isValidEmail = checkEmail(userEmail);
     const isValidZip = checkZip(userZip);
     const isValidCVV = checkCVV(userCVV);
-    
-    // check if fields are valid, prevent submission if false
-    if (isValidName === false || 
-        isValidEmail === false ||
-        isValidZip === false ||
-        isValidCVV === false ||
-        totalCost === 0) 
-    {
-        e.preventDefault();
-        console.log(false);
-    }
+
+    // create array of isValid variables above
+    const checkedInputs = [
+        isValidName,
+        isValidEmail,
+        isValidZip,
+        isValidCVV
+    ]
+
+    // iterate through each validation checked fields
+    for (i = 0; i < checkedInputs.length; i++) {
+
+        // if an input field is not valid
+        if (checkedInputs[i] === false) {
+
+            // prevent page from reloading
+            e.preventDefault();
+
+            // find parent label of associated element
+            // add not-valid class, remove valid class
+            // display error hint
+            inputFields[i].parentElement.classList.add('not-valid');
+            inputFields[i].parentElement.classList.remove('valid');
+            inputFields[i].parentElement.lastElementChild.style.display = 'inline';
+        } else { 
+            // if valid, do opposites of above
+            inputFields[i].parentElement.classList.add('valid');
+            inputFields[i].parentElement.classList.remove('not-valid');
+            inputFields[i].parentElement.lastElementChild.style.display = "none";
+        }
+    };
 });
-
-// *****************************************************************
-// --Accessibility--
-// *****************************************************************
-
