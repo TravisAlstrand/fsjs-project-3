@@ -117,15 +117,44 @@ activitiesField.addEventListener('change', (e) => {
 
         // call update cost passing new totalCost
         updateCost(totalCost);
+        
+        // loop through each activity
+        activitiesArray.forEach(activity => {
 
-        // if target was unchecked
-    } else if (e.target.checked === false) {
+            // if date and time matches what was selected
+            if (activity.getAttribute('data-day-and-time') ===
+                e.target.getAttribute('data-day-and-time')) {
+
+                    // if it's not the one that was selected
+                    // add disabled class to parent & disable checkbox
+                    if (activity.checked === false) {
+                        activity.parentElement.classList.add('disabled');
+                        activity.disabled = true;
+                    }
+            }
+        });
+
+    // if target was unchecked
+    } else {
 
         // subtract the cost of target from total cost variable
         totalCost -= targetCost;
 
         // call update cost passing new totalCost
         updateCost(totalCost);
+
+        // loop through each activity
+        activitiesArray.forEach(activity => {
+
+            // if date and time matches what was unselected
+            if (activity.getAttribute('data-day-and-time') ===
+                e.target.getAttribute('data-day-and-time')) {
+
+                    // remove disabled class from parent & enable checkbox
+                    activity.parentElement.classList.remove('disabled');
+                    activity.disabled = false;
+            }
+        });
     }
 });
 
