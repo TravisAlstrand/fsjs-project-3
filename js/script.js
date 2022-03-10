@@ -60,6 +60,9 @@ jobSelect.addEventListener('change', () => {
 // disable the shirt color select upon loading page
 shirtColorSelect.disabled = true;
 
+// create variable for currently selected shirt theme
+let currentShirtTheme = null;
+
 // listen for selection of t-shirt design
 shirtDesignSelect.addEventListener('change', () => {
 
@@ -68,6 +71,14 @@ shirtDesignSelect.addEventListener('change', () => {
 
     // if 'js puns' design is selected
     if (shirtDesignSelect.value === 'js puns') {
+
+        // if nothing or 'I heart js' was previously selected
+        if (currentShirtTheme !== 'js puns theme') {
+
+            // change option default text and select it
+            shirtColorSelect.firstElementChild.innerHTML = 'Select a color for "JS Puns" theme';
+            shirtColorSelect.firstElementChild.setAttribute('selected', 'selected');
+        }
 
         // loop through each color option
         shirtColors.forEach(option => {
@@ -80,8 +91,19 @@ shirtDesignSelect.addEventListener('change', () => {
             }
         })
 
+        // change value of current shirt var to 'js puns'
+        currentShirtTheme = 'js puns theme';
+
     // if 'heart js' design is selected
     } else if (shirtDesignSelect.value === 'heart js') {
+
+        // if nothing or 'js puns' was previously selected
+        if (currentShirtTheme !== 'heart js theme') {
+
+            // change option default text and select it
+            shirtColorSelect.firstElementChild.innerHTML = 'Select a color for "I &#9829; JS" theme';
+            shirtColorSelect.firstElementChild.setAttribute('selected', 'selected');
+        }
 
         // loop through each color option
         shirtColors.forEach(option => {
@@ -93,7 +115,16 @@ shirtDesignSelect.addEventListener('change', () => {
                 option.setAttribute('hidden', 'hidden');
             }
         })
+
+        // change value of current shirt var to 'js puns'
+        currentShirtTheme = 'heart js theme';
     }
+});
+
+// listen for changes in color select
+// de-select default option so it can change back if theme is changed
+shirtColorSelect.addEventListener('change', () => {
+    shirtColorSelect.firstElementChild.removeAttribute('selected');
 });
 
 // *****************************************************************
@@ -112,12 +143,17 @@ activitiesField.addEventListener('change', (e) => {
     // check if target was checked
     if (e.target.checked === true) {
 
+        // remove error class & hint in case it was already on
+        activitiesField.classList.remove('not-valid');
+        activitiesField.lastElementChild.style.display = 'none';
+
         // add the cost of target to total cost variable
         totalCost += targetCost;
 
         // call update cost passing new totalCost
         updateCost(totalCost);
         
+        // EXTRA CREDIT 1-----------------------------------------------------
         // loop through each activity
         activitiesArray.forEach(activity => {
 
@@ -133,6 +169,7 @@ activitiesField.addEventListener('change', (e) => {
                     }
             }
         });
+        // -------------------------------------------------------------------
 
     // if target was unchecked
     } else {
@@ -143,6 +180,7 @@ activitiesField.addEventListener('change', (e) => {
         // call update cost passing new totalCost
         updateCost(totalCost);
 
+        // EXTRA CREDIT 1-----------------------------------------------------
         // loop through each activity
         activitiesArray.forEach(activity => {
 
@@ -155,6 +193,7 @@ activitiesField.addEventListener('change', (e) => {
                     activity.disabled = false;
             }
         });
+        // -------------------------------------------------------------------
     }
 });
 
@@ -226,17 +265,22 @@ paymentSelect.addEventListener('change', () => {
 const inputFields = [
     nameField,
     emailField,
+    cardNumField,
     zipField,
     cvvField
 ];
 
 // check input field validities, return bool
 function checkName(name) {
-    return /^[a-z]+\s?[a-z]+$/i.test(name);
+    return /^[a-z]+[\s]?[a-z]+?$/i.test(name);
 }
 
 function checkEmail(email) {
     return /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
+}
+
+function checkNum(num) {
+    return /^(\d{13,16})$/.test(num);
 }
 
 function checkZip(zip) {
@@ -253,22 +297,34 @@ formElement.addEventListener('submit', (e) => {
     // create variables for field values
     const userName = nameField.value;
     const userEmail = emailField.value;
+    const userNum = cardNumField.value;
     const userZip = zipField.value;
     const userCVV = cvvField.value;
 
     // call validator functions passing variables above
     const isValidName = checkName(userName);
     const isValidEmail = checkEmail(userEmail);
-    const isValidZip = checkZip(userZip);
-    const isValidCVV = checkCVV(userCVV);
+
 
     // create array of isValid variables above
     const checkedInputs = [
         isValidName,
-        isValidEmail,
-        isValidZip,
-        isValidCVV
+        isValidEmail
     ]
+
+    // if credit-card is chosen
+    if (paymentSelect.value === 'credit-card') {
+
+        // call validator functions for card fields
+        const isValidNum = checkNum(userNum);
+        const isValidZip = checkZip(userZip);
+        const isValidCVV = checkCVV(userCVV);
+
+        // add above variables to checked inputs array
+        checkedInputs.push(isValidNum);
+        checkedInputs.push(isValidZip);
+        checkedInputs.push(isValidCVV);
+    }
 
     // iterate through each validation checked fields
     for (i = 0; i < checkedInputs.length; i++) {
@@ -289,7 +345,89 @@ formElement.addEventListener('submit', (e) => {
             // if valid, do opposites of above
             inputFields[i].parentElement.classList.add('valid');
             inputFields[i].parentElement.classList.remove('not-valid');
-            inputFields[i].parentElement.lastElementChild.style.display = "none";
+            inputFields[i].parentElement.lastElementChild.style.display = 'none';
         }
     };
+
+    // if no activities are selected
+    if (totalCost === 0) {
+        
+        // prevent page from reloading
+        e.preventDefault();
+
+        // display error hint
+        activitiesField.lastElementChild.style.display = 'inline';
+
+        // add not-valid class, remove valid class
+        activitiesField.classList.add('not-valid');
+        activitiesField.classList.remove('valid');
+    } else {
+        // if one is selected do opposite of above
+        activitiesField.lastElementChild.style.display = 'none';
+        activitiesField.classList.add('valid');
+        activitiesField.classList.remove('not-valid');
+    }
 });
+
+// *****************************************************************
+// --Extra Credit 2 & 3--
+// *****************************************************************
+
+// Extra Credit 1 is in 'Activities' section above
+
+// REAL TIME CONDITIONAL NAME VALIDATION---------------------------------------------------
+
+// listen for typing in name field
+nameField.addEventListener('keyup', () => {
+
+    // set input to variable
+    const userName = nameField.value;
+    
+    // call validator functions passing variables above
+    const isValidName = checkName(userName);
+
+    if (isValidName) {
+        nameField.parentElement.classList.add('valid');
+        nameField.parentElement.classList.remove('not-valid');
+        nameField.parentElement.lastElementChild.style.display = 'none';
+    } else if (userName === '') {
+        nameField.parentElement.classList.remove('valid');
+        nameField.parentElement.classList.add('not-valid');
+        nameField.parentElement.lastElementChild.style.display = 'inherit';
+        nameField.parentElement.lastElementChild.innerHTML = 'Name field cannot be blank';
+    } else if (!isValidName) {
+        nameField.parentElement.classList.remove('valid');
+        nameField.parentElement.classList.add('not-valid');
+        nameField.parentElement.lastElementChild.style.display = 'inherit';
+        nameField.parentElement.lastElementChild.innerHTML = 'Cannot contain numbers or symbols. Must be more than 2 characters.'
+    }
+});
+
+// REAL TIME CONDITIONAL EMAIL VALIDATION---------------------------------------------------
+
+// listen for typing in name field
+emailField.addEventListener('keyup', () => {
+
+    // set input to variable
+    const userEmail = emailField.value;
+    
+    // call validator functions passing variables above
+    const isValidEmail = checkEmail(userEmail);
+
+    if (isValidEmail) {
+        emailField.parentElement.classList.add('valid');
+        emailField.parentElement.classList.remove('not-valid');
+        emailField.parentElement.lastElementChild.style.display = 'none';
+    } else if (userEmail === '') {
+        emailField.parentElement.classList.remove('valid');
+        emailField.parentElement.classList.add('not-valid');
+        emailField.parentElement.lastElementChild.style.display = 'inherit';
+        emailField.parentElement.lastElementChild.innerHTML = 'Email field cannot be blank';
+    } else if (!isValidEmail) {
+        emailField.parentElement.classList.remove('valid');
+        emailField.parentElement.classList.add('not-valid');
+        emailField.parentElement.lastElementChild.style.display = 'inherit';
+        emailField.parentElement.lastElementChild.innerHTML = 'Email must be formatted correctly. Ex: "john@example.com".'
+    }
+});
+
